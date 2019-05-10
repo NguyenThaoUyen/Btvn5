@@ -10,6 +10,9 @@ import com.example.btvn5.Model.Item
 import com.example.btvn5.Model.MOVIE_KEY
 import com.example.btvn5.Model.Movie
 import kotlinx.android.synthetic.main.activity_detail_movie.*
+import kotlinx.android.synthetic.main.activity_detail_movie.date
+import kotlinx.android.synthetic.main.activity_detail_movie.name
+import kotlinx.android.synthetic.main.itemmovie.*
 
 class DetailMovieActivity : AppCompatActivity() {
     val TAG: String =DetailMovieActivity::class.java.simpleName

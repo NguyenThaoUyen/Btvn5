@@ -1,41 +1,62 @@
 package com.example.btvn5.Frament
 
 import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.example.btvn5.Adapter.ItemClickListenner
+import com.example.btvn5.Adapter.MovieAdapter
+import com.example.btvn5.DetailMovieActivity
+import com.example.btvn5.Model.*
 
 import com.example.btvn5.R
+import com.google.gson.Gson
+import kotlinx.android.synthetic.main.fragment_top_rate.*
+import okhttp3.*
+import java.io.IOException
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Activities that contain this fragment must implement the
- * [TopRateFragment.OnFragmentInteractionListener] interface
- * to handle interaction events.
- * Use the [TopRateFragment.newInstance] factory method to
- * create an instance of this fragment.
- *
- */
+
 class TopRateFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
-    private var listener: OnFragmentInteractionListener? = null
 
+    var movie_rate: ArrayList<Movie.Results> = ArrayList()
+    lateinit var toprateAdapter: MovieAdapter
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
+        addMovie()
+        toprateAdapter = MovieAdapter(movie_rate,activity)
+
+    }
+
+    private fun addMovie() {
+        val client = OkHttpClient()
+        val request = Request.Builder()
+            .url("https://api.themoviedb.org/3/movie/top_rated?api_key=7519cb3f829ecd53bd9b7007076dbe23")
+            .build()
+        client.newCall(request)
+            .enqueue(object : Callback {
+                override fun onFailure(call: Call, e: IOException) {
+                    activity!!.runOnUiThread {
+                        call.cancel()
+                    }
+                }
+                override fun onResponse(call: Call, response: Response) {
+                    val json = response.body()!!.string()
+                    val datagson = Gson().fromJson(json, Movie.ResultArray::class.java)
+                    activity!!.runOnUiThread {
+                        movie_rate.clear()
+                        for (i in datagson.results) {
+                            movie_rate.add(i)
+                            toprateAdapter.notifyDataSetChanged()
+                        }
+                    }
+                }
+            })
     }
 
     override fun onCreateView(
@@ -46,58 +67,72 @@ class TopRateFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_top_rate, container, false)
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    fun onButtonPressed(uri: Uri) {
-        listener?.onFragmentInteraction(uri)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        top_rate.layoutManager = LinearLayoutManager(context)
+        top_rate.adapter = toprateAdapter
+        toprateAdapter.setListenner(movieItemCLickListener)
+        swipeRefresh.setOnRefreshListener{
+            loadItems()
+        }
+        swipeRefresh.setColorSchemeResources(android.R.color.holo_blue_bright,
+            android.R.color.holo_green_light, android.R.color.holo_orange_light, android.R.color.holo_red_light)
+
     }
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        if (context is OnFragmentInteractionListener) {
-            listener = context
-        } else {
-            throw RuntimeException(context.toString() + " must implement OnFragmentInteractionListener")
+    var movieFresh:ArrayList<Movie.Results> = ArrayList()
+    private fun loadItems() {
+        toprateAdapter.clear()
+        addFresh()
+        onItemsLoadComplete()
+
+    }
+
+    private fun onItemsLoadComplete() {
+        swipeRefresh.isRefreshing = false
+    }
+
+    private fun addFresh() {
+        val client = OkHttpClient()
+        val request = Request.Builder()
+            .url("https://api.themoviedb.org/3/movie/top_rated?api_key=7519cb3f829ecd53bd9b7007076dbe23")
+            .build()
+        client.newCall(request)
+            .enqueue(object : Callback {
+                override fun onFailure(call: Call, e: IOException) {
+                    activity!!.runOnUiThread {
+                        call.cancel()
+                    }
+                }
+                override fun onResponse(call: Call, response: Response) {
+                    val json = response.body()!!.string()
+                    val datagson = Gson().fromJson(json, Movie.ResultArray::class.java)
+                    activity!!.runOnUiThread {
+                        for (i in datagson.results) {
+                            movieFresh.add(i)
+                        }
+                        toprateAdapter.addAll(movieFresh)
+
+                    }
+                }
+            })
+    }
+
+    private val movieItemCLickListener = object : ItemClickListenner {
+
+        override fun onItemCLicked(position: Int) {
+            var category = Category(categoryId = 1, categoryName = "MacBook")
+            var item = Item(
+                imageId = 2,
+                price = 30.0,
+                title = "MacBook Pro",
+                category = category
+            )
+            val intent = Intent(activity, DetailMovieActivity::class.java)
+            intent.putExtra(MOVIE_KEY, movie_rate[position])
+            intent.putExtra(CONSTANT_KEY, item)
+            startActivity(intent)
         }
     }
-
-    override fun onDetach() {
-        super.onDetach()
-        listener = null
-    }
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     *
-     *
-     * See the Android Training lesson [Communicating with Other Fragments]
-     * (http://developer.android.com/training/basics/fragments/communicating.html)
-     * for more information.
-     */
-    interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        fun onFragmentInteraction(uri: Uri)
-    }
-
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment TopRateFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            TopRateFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
-    }
 }
+

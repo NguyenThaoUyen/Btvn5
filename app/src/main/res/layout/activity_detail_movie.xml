@@ -62,7 +62,7 @@
         android:padding="5dp"
         />
     <TextView
-        android:id="@+id/des"
+        android:id="@+id/overview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
