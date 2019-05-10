@@ -19,7 +19,8 @@
             android:id="@+id/movie_view"
             android:layout_width="match_parent"
             android:layout_height="200dp"
-            tools:contentDescription="TODO" />
+            tools:contentDescription="TODO"
+            android:contentDescription="@string/todo" />
 
         <ImageButton
             android:id="@+id/video_play"
@@ -29,7 +30,8 @@
             android:alpha="6"
             tools:contentDescription="TODO"
             android:background="@drawable/ic_action_name"
-            android:visibility="invisible" />
+            android:visibility="invisible"
+            android:contentDescription="@string/todo" />
     </RelativeLayout>
     <TextView
         android:id="@+id/name"
@@ -37,11 +39,10 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="5dp"
         android:layout_marginTop="10dp"
-        android:layout_toEndOf="@+id/movie"
         tools:text="Display Name"
         android:textAlignment="center"
         android:textColor="@color/text"
-        android:textSize="16dp"
+        android:textSize="16sp"
         android:textStyle="bold"
         android:padding="5dp"/>
     <RatingBar
@@ -53,12 +54,10 @@
         android:id="@+id/date"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/name"
-        android:layout_toEndOf="@+id/movie"
         tools:text="Release Date"
         android:textAlignment="textStart"
         android:textColor="@color/text"
-        android:textSize="14dp"
+        android:textSize="14sp"
         android:padding="5dp"
         />
     <TextView
@@ -66,11 +65,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:layout_below="@+id/date"
-        android:layout_toEndOf="@+id/movie"
         tools:text="Description"
         android:textColor="@color/text"
-        android:textSize="14dp"
+        android:textSize="14sp"
         android:padding="5dp"/>
 
 </LinearLayout>

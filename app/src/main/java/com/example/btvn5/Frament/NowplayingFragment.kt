@@ -20,7 +20,7 @@ import kotlinx.android.synthetic.main.fragment_nowplaying.*
 import okhttp3.*
 import java.io.IOException
 
-// TODO: Rename parameter arguments, choose names that match
+
 
 class NowplayingFragment : Fragment() {
 

@@ -36,7 +36,7 @@ class DetailMovieActivity : AppCompatActivity() {
             Log.e(TAG,item.toString())
             name.text = movie.title
             date.text = movie.release_date
-            des.text = movie.overview
+            overview.text = movie.overview
             Glide.with(this)
                 .load("https://image.tmdb.org/t/p/w500/${movie.backdrop_path}")
                 .centerCrop()
